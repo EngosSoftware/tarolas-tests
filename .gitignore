@@ -1,0 +1,9 @@
+/bin/
+/pkg/
+/src/github.com/
+
+.idea/*
+!/.idea/runConfigurations
+*.iws
+.*iml
+.*ipr
