@@ -9,7 +9,6 @@
 package cases
 
 import (
-    "encoding/base64"
     o "github.com/EngosSoftware/oxyde"
     c "software/engos/tarolas/tests/common"
 )
@@ -46,7 +45,7 @@ func TcFileAppend(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
     params := FileAppendParams{Name: &c.FileNames[c.FileA]}
-    content := base64.RawStdEncoding.EncodeToString([]byte(c.FileContents[c.FileA]))
+    content := c.EncodeToString(c.FileContents[c.FileA])
     body := FileAppendBody{Base64: &content}
     var result FileAppendResult
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
@@ -59,19 +58,19 @@ func TcFileAppendParts(ctx *c.Context, dtx *o.DocContext) {
     var result FileAppendResult
     params := FileAppendParams{Name: &c.FileNames[c.FileB]}
 
-    content := base64.RawStdEncoding.EncodeToString([]byte(c.FileContents[c.FileA]))
+    content := c.EncodeToString(c.FileContents[c.FileA])
     body := FileAppendBody{Base64: &content}
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
 
-    content = base64.RawStdEncoding.EncodeToString([]byte(c.FileContents[c.FileB]))
+    content = c.EncodeToString(c.FileContents[c.FileB])
     body = FileAppendBody{Base64: &content}
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
 
-    content = base64.RawStdEncoding.EncodeToString([]byte(c.FileContents[c.FileC]))
+    content = c.EncodeToString(c.FileContents[c.FileC])
     body = FileAppendBody{Base64: &content}
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
 
-    content = base64.RawStdEncoding.EncodeToString([]byte(c.FileContents[c.FileD]))
+    content = c.EncodeToString(c.FileContents[c.FileD])
     body = FileAppendBody{Base64: &content}
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
 
@@ -79,7 +78,7 @@ func TcFileAppendParts(ctx *c.Context, dtx *o.DocContext) {
 }
 
 func FileAppend(ctx *c.Context, dtx *o.DocContext, name string, content []byte) {
-    fileContent := base64.RawStdEncoding.EncodeToString(content)
+    fileContent := c.EncodeToStringBytes(content)
     params := FileAppendParams{Name: &name}
     body := FileAppendBody{Base64: &fileContent}
     var result FileAppendResult
@@ -90,7 +89,7 @@ func FileAppendBig(ctx *c.Context, dtx *o.DocContext, name string, len, count in
     params := FileAppendParams{Name: &name}
     var result FileAppendResult
     for i := 0; i < count; i++ {
-        fileContent := base64.RawStdEncoding.EncodeToString(c.RandomContent(len))
+        fileContent := c.EncodeToStringBytes(c.RandomContent(len))
         body := FileAppendBody{Base64: &fileContent}
         o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
     }

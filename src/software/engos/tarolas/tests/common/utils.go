@@ -10,6 +10,7 @@ package common
 
 import (
     "bytes"
+    "encoding/base64"
     "fmt"
     o "github.com/EngosSoftware/oxyde"
     "math/rand"
@@ -128,4 +129,12 @@ func AssertMethodNotSupportedErrorPUT(errors []ErrorDto) {
 
 func AssertMethodNotSupportedErrorDELETE(errors []ErrorDto) {
     AssertError(errors, Http400, "request method not supported", "DELETE", 10001)
+}
+
+func EncodeToString(data string) string {
+    return base64.StdEncoding.EncodeToString([]byte(data))
+}
+
+func EncodeToStringBytes(data []byte) string {
+    return base64.StdEncoding.EncodeToString(data)
 }
