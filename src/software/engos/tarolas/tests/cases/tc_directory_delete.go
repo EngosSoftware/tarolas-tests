@@ -18,8 +18,8 @@ const (
 )
 
 type DirectoryDeleteParams struct {
-    Name *string `json:"name"  api:"Name of the directory to be deleted. May contain parent directory names."`
-    All  *bool   `json:"all"   api:"Flag indicating if whole directory content should be deleted, including subdirectories."`
+    Name *string `json:"name"  api:"Name of the directory to be deleted. Directory name may contain parent directories."`
+    All  *bool   `json:"all"   api:"?Optional flag indicating if whole directory content should be deleted, including subdirectories and files."`
 }
 
 type DirectoryDeleteResult struct {
@@ -33,11 +33,29 @@ func TsDirectoryDelete(ctx *c.Context, dtx *o.DocContext) {
 }
 
 func TdDirectoryDelete(ctx *c.Context, dtx *o.DocContext) {
+    const summary = `Deletes an existing directory.`
+    const description = `(to be updated)`
     c.Display(ctx)
-    TcDirectoryDeleteRoot(ctx, dtx)
+    dtx.NewEndpoint(ctx.Version, c.DirectoriesTag, summary, description)
     TcDirectoryDelete(ctx, dtx)
+    TcDirectoryDeleteRoot(ctx, dtx)
     TcDirectoryDeleteSubdirectory(ctx, dtx)
     TcDirectoryDeleteMethodNotSupported(ctx, dtx)
+    dtx.SaveEndpoint()
+}
+
+func TcDirectoryDelete(ctx *c.Context, dtx *o.DocContext) {
+    c.Display(ctx)
+    RemoveRootContents(ctx, dtx)
+    directoryName := c.RootDirName + c.DirectoryNames[c.DirectoryA]
+    DirectoryCreate(ctx, dtx, directoryName, c.FlagFalse)
+    params := DirectoryDeleteParams{Name: &directoryName, All: &c.FlagFalse}
+    var result DirectoryDeleteResult
+    dtx.CollectAll("Deletes single directory", "")
+    o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
+    dir := DirectoryRead(ctx, dtx, c.RootDirName)
+    c.AssertEmptyDirectory(dir, c.RootDirName)
+    c.DisplayOK(ctx)
 }
 
 func TcDirectoryDeleteRoot(ctx *c.Context, dtx *o.DocContext) {
@@ -55,7 +73,7 @@ func TcDirectoryDeleteRoot(ctx *c.Context, dtx *o.DocContext) {
     dir = DirectoryRead(ctx, dtx, c.RootDirName)
     c.AssertEmptyDirectory(dir, c.RootDirName)
     // with flag 'all' == false deleting non empty root directory should have no effect
-    DirectoryCreate(ctx, dtx, c.DirectoryNames[c.DirectoryA], c.FlagFalse)
+    DirectoryCreate(ctx, dtx, c.RootDirName+c.DirectoryNames[c.DirectoryA], c.FlagFalse)
     params = DirectoryDeleteParams{Name: &c.RootDirName, All: &c.FlagFalse}
     o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
     dir = DirectoryRead(ctx, dtx, c.RootDirName)
@@ -68,27 +86,15 @@ func TcDirectoryDeleteRoot(ctx *c.Context, dtx *o.DocContext) {
     c.DisplayOK(ctx)
 }
 
-func TcDirectoryDelete(ctx *c.Context, dtx *o.DocContext) {
-    c.Display(ctx)
-    RemoveRootContents(ctx, dtx)
-    DirectoryCreate(ctx, dtx, c.DirectoryNames[c.DirectoryA], c.FlagFalse)
-    var result DirectoryDeleteResult
-    params := DirectoryDeleteParams{Name: &c.DirectoryNames[c.DirectoryA], All: &c.FlagFalse}
-    o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
-    dir := DirectoryRead(ctx, dtx, c.RootDirName)
-    c.AssertEmptyDirectory(dir, c.RootDirName)
-    c.DisplayOK(ctx)
-}
-
 func TcDirectoryDeleteSubdirectory(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    name := c.DirectoryNames[c.DirectoryA] + "/" + c.DirectoryNames[c.DirectoryB]
+    name := c.RootDirName + c.DirectoryNames[c.DirectoryA] + "/" + c.DirectoryNames[c.DirectoryB]
     DirectoryCreate(ctx, dtx, name, c.FlagTrue)
     var result DirectoryDeleteResult
     params := DirectoryDeleteParams{Name: &name, All: &c.FlagFalse}
     o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
-    dir := DirectoryRead(ctx, dtx, c.DirectoryNames[c.DirectoryA])
+    dir := DirectoryRead(ctx, dtx, c.RootDirName+c.DirectoryNames[c.DirectoryA])
     c.AssertEmptyDirectory(dir, c.DirectoryNames[c.DirectoryA])
     c.DisplayOK(ctx)
 }
@@ -96,7 +102,7 @@ func TcDirectoryDeleteSubdirectory(ctx *c.Context, dtx *o.DocContext) {
 func TcDirectoryDeleteMethodNotSupported(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    DirectoryCreate(ctx, dtx, c.DirectoryNames[c.DirectoryA], false)
+    DirectoryCreate(ctx, dtx, c.RootDirName+c.DirectoryNames[c.DirectoryA], false)
     var result DirectoryDeleteResult
     all := false
     params := DirectoryDeleteParams{

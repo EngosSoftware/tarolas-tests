@@ -32,18 +32,29 @@ func TsFileChecksum(ctx *c.Context, dtx *oxyde.DocContext) {
 }
 
 func TdFileChecksum(ctx *c.Context, dtx *oxyde.DocContext) {
+    const summary = `Calculates the file's checksum.`
+    const description = `(to be updated)`
     c.Display(ctx)
+    dtx.NewEndpoint(ctx.Version, c.FilesTag, summary, description)
     TcFileChecksumSmall(ctx, dtx)
     TcFileChecksumBig(ctx, dtx)
     TcFileChecksumNotFound(ctx, dtx)
+    dtx.SaveEndpoint()
 }
 
 func TcFileChecksumSmall(ctx *c.Context, dtx *oxyde.DocContext) {
+    const summary = `
+Calculates checksum.
+`
+    const description = `
+`
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    FileAppend(ctx, dtx, c.FileNames[c.FileA], []byte(c.FileContents[c.FileA]))
-    params := FileChecksumParams{Name: &c.FileNames[c.FileA]}
+    fileName := c.RootDirName + c.FileNames[c.FileA]
+    FileAppend(ctx, dtx, fileName, []byte(c.FileContents[c.FileA]))
+    params := FileChecksumParams{Name: &fileName}
     var result FileChecksumResult
+    dtx.CollectAll(summary, description)
     oxyde.HttpGET(ctx, dtx, FileChecksumUrl, nil, &params, &result, 200)
     c.DisplayOK(ctx)
 }
@@ -51,8 +62,9 @@ func TcFileChecksumSmall(ctx *c.Context, dtx *oxyde.DocContext) {
 func TcFileChecksumBig(ctx *c.Context, dtx *oxyde.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    FileAppendBig(ctx, dtx, c.FileNames[c.FileA], 1024, 10)
-    params := FileChecksumParams{Name: &c.FileNames[c.FileA]}
+    fileName := c.RootDirName + c.FileNames[c.FileA]
+    FileAppendBig(ctx, dtx, fileName, 1024, 10)
+    params := FileChecksumParams{Name: &fileName}
     var result FileChecksumResult
     oxyde.HttpGET(ctx, dtx, FileChecksumUrl, nil, &params, &result, 200)
     c.DisplayOK(ctx)
@@ -61,9 +73,10 @@ func TcFileChecksumBig(ctx *c.Context, dtx *oxyde.DocContext) {
 func TcFileChecksumNotFound(ctx *c.Context, dtx *oxyde.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    params := FileChecksumParams{Name: &c.FileNames[c.FileA]}
+    fileName := c.RootDirName + c.FileNames[c.FileA]
+    params := FileChecksumParams{Name: &fileName}
     var result FileChecksumResult
     oxyde.HttpGET(ctx, dtx, FileChecksumUrl, nil, &params, &result, 400)
-    c.AssertError(result.Errors, 400, "file not found", c.FileNames[c.FileA], 10938)
+    c.AssertError(result.Errors, 400, "file not found", fileName, 10938)
     c.DisplayOK(ctx)
 }

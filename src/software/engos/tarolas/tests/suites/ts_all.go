@@ -15,12 +15,19 @@ import (
 )
 
 func All(ctx *c.Context, dtx *o.DocContext) {
+
+    //ctx.Verbose = true
+
     c.Display(ctx)
     c.TsNames(ctx, dtx)
     tc.TsDirectoryCreate(ctx, dtx)
     tc.TsDirectoryDelete(ctx, dtx)
     tc.TsDirectoryRead(ctx, dtx)
     tc.TsFileAppend(ctx, dtx)
+    tc.TsFileDelete(ctx, dtx)
     tc.TsFileExists(ctx, dtx)
     tc.TsFileChecksum(ctx, dtx)
+
+    // start documentation preview server
+    o.StartPreview(dtx)
 }

@@ -36,18 +36,29 @@ func TsFileAppend(ctx *c.Context, dtx *o.DocContext) {
 }
 
 func TdFileAppend(ctx *c.Context, dtx *o.DocContext) {
+    const summary = `Appends data to a file.`
+    const description = `(to be updated)`
     c.Display(ctx)
+    dtx.NewEndpoint(ctx.Version, c.FilesTag, summary, description)
     TcFileAppend(ctx, dtx)
     TcFileAppendParts(ctx, dtx)
+    dtx.SaveEndpoint()
 }
 
 func TcFileAppend(ctx *c.Context, dtx *o.DocContext) {
+    const summary = `
+Appends data to file.
+`
+    const description = `
+`
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    params := FileAppendParams{Name: &c.FileNames[c.FileA]}
+    fileName := c.RootDirName + c.FileNames[c.FileA]
+    params := FileAppendParams{Name: &fileName}
     content := c.EncodeToString(c.FileContents[c.FileA])
     body := FileAppendBody{Base64: &content}
     var result FileAppendResult
+    dtx.CollectAll(summary, description)
     o.HttpPUT(ctx, dtx, FileAppendUrl, nil, &params, &body, &result, 200)
     c.DisplayOK(ctx)
 }
@@ -56,7 +67,8 @@ func TcFileAppendParts(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
     var result FileAppendResult
-    params := FileAppendParams{Name: &c.FileNames[c.FileB]}
+    fileName := c.RootDirName + c.FileNames[c.FileB]
+    params := FileAppendParams{Name: &fileName}
 
     content := c.EncodeToString(c.FileContents[c.FileA])
     body := FileAppendBody{Base64: &content}

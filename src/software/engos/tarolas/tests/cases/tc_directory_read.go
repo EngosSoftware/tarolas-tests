@@ -32,36 +32,29 @@ func TsDirectoryRead(ctx *c.Context, dtx *oxyde.DocContext) {
 }
 
 func TdDirectoryRead(ctx *c.Context, dtx *oxyde.DocContext) {
+    const summary = `Reads the directory content.`
+    const description = `(to be updated)`
     c.Display(ctx)
-    TcDirectoryReadEmptyRoot(ctx, dtx)
+    dtx.NewEndpoint(ctx.Version, c.DirectoriesTag, summary, description)
     TcDirectoryReadRoot(ctx, dtx)
-}
-
-func TcDirectoryReadEmptyRoot(ctx *c.Context, dtx *oxyde.DocContext) {
-    c.Display(ctx)
-    RemoveRootContents(ctx, dtx)
-    var result DirectoryReadResult
-    f := func(params DirectoryReadParams) {
-        oxyde.HttpGET(ctx, dtx, DirectoryReadUrl, nil, &params, &result, 200)
-        oxyde.AssertNotNil(result.Data)
-        oxyde.AssertEqualInt(0, len(result.Data.Directories))
-        oxyde.AssertEqualInt(0, len(result.Data.Files))
-        oxyde.AssertEqualStringNullable(&c.RootDirName, result.Data.Name)
-    }
-    f(DirectoryReadParams{Name: nil})
-    f(DirectoryReadParams{Name: &c.RootDirName})
-    f(DirectoryReadParams{Name: &c.EmptyValue})
-    f(DirectoryReadParams{Name: &c.SpaceValue})
-    f(DirectoryReadParams{Name: &c.WhiteSpaceValue})
-    c.DisplayOK(ctx)
+    TcDirectoryReadEmptyRoot(ctx, dtx)
+    dtx.SaveEndpoint()
 }
 
 func TcDirectoryReadRoot(ctx *c.Context, dtx *oxyde.DocContext) {
+    const summary = `
+Reading the content of directory.
+`
+    const description = `
+aaa
+`
     c.Display(ctx)
     RemoveRootContents(ctx, dtx)
-    DirectoryCreate(ctx, dtx, c.DirectoryNames[c.DirectoryA], false)
+    directoryName := c.RootDirName + c.DirectoryNames[c.DirectoryA]
+    DirectoryCreate(ctx, dtx, directoryName, false)
+    params := DirectoryReadParams{Name: &c.RootDirName}
     var result DirectoryReadResult
-    params := DirectoryReadParams{Name: nil}
+    dtx.CollectAll(summary, description)
     oxyde.HttpGET(ctx, dtx, DirectoryReadUrl, nil, &params, &result, 200)
     oxyde.AssertNotNil(result.Data)
     c.AssertNoFiles(result.Data)
@@ -72,6 +65,21 @@ func TcDirectoryReadRoot(ctx *c.Context, dtx *oxyde.DocContext) {
     oxyde.AssertEqualStringNullable(&c.DirectoryNames[c.DirectoryA], subDir.Name)
     c.AssertNoFiles(subDir)
     c.AssertNoDirectories(subDir)
+    c.DisplayOK(ctx)
+}
+
+func TcDirectoryReadEmptyRoot(ctx *c.Context, dtx *oxyde.DocContext) {
+    c.Display(ctx)
+    RemoveRootContents(ctx, dtx)
+    var result DirectoryReadResult
+    f := func(params DirectoryReadParams, errorMessage string, errorCode int) {
+        oxyde.HttpGET(ctx, dtx, DirectoryReadUrl, nil, &params, &result, 400)
+        c.AssertError(result.Errors, 400, errorMessage, "name", errorCode)
+    }
+    f(DirectoryReadParams{Name: nil},"required parameter is missing",10837)
+    f(DirectoryReadParams{Name: &c.EmptyValue},"required parameter is empty",10767)
+    f(DirectoryReadParams{Name: &c.SpaceValue},"required parameter is empty",10767)
+    f(DirectoryReadParams{Name: &c.WhiteSpaceValue},"required parameter is empty",10767)
     c.DisplayOK(ctx)
 }
 

@@ -16,7 +16,7 @@ import (
     "software/engos/tarolas/tests/suites"
 )
 
-const Url = "http://localhost:15001"
+const Url = "http://localhost:15001/api/rest/v1"
 
 func showUsage() {
     // TODO extend usage message

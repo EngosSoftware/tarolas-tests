@@ -17,5 +17,8 @@ import (
 func Single(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     ctx.Verbose = false
-    tc.TsFileChecksum(ctx, dtx)
+    tc.TsDirectoryCreate(ctx, dtx)
+
+    // start documentation preview server
+    o.StartPreview(dtx)
 }

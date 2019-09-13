@@ -15,9 +15,10 @@ type DirectoryDto struct {
 }
 
 type FileDto struct {
-    Name     *string `json:"name"      api:"File name with extension (if present) without path to file."`
-    Size     *int64  `json:"size"      api:"File size in bytes."`
-    Checksum *string `json:"checksum"  api:"File checksum (SHA256)."`
+    Name     *string `json:"name"      api:"?File name with extension (if present) without path to file."`
+    Size     *int64  `json:"size"      api:"?File size in bytes."`
+    Checksum *string `json:"checksum"  api:"?File checksum (SHA256)."`
+    Exists   *bool   `json:"exists"    api:"?Flag indicating if a file exists."`
 }
 
 type ErrorDto struct {
