@@ -14,6 +14,7 @@ import (
     "fmt"
     o "github.com/EngosSoftware/oxyde"
     "math/rand"
+    "os"
     "strconv"
     "strings"
 )
@@ -79,6 +80,11 @@ func RandomContent(len int) []byte {
         width++
     }
     return buffer.Bytes()
+}
+
+func ChangeMode(name string, mode os.FileMode) {
+    err := os.Chmod(RootTestDir+name, mode)
+    o.AssertNilError(err)
 }
 
 func AssertOneSubdirectory(dir DirectoryDto, name string, subName string) {

@@ -16,8 +16,8 @@ import (
 
 func Single(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
-    ctx.Verbose = false
-    tc.TcFileAppend(ctx, dtx)
+    ctx.Verbose = true
+    tc.TsDirectoryRead(ctx, dtx)
 
     // start documentation preview server
     o.StartPreview(dtx)

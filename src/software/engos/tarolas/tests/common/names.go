@@ -19,11 +19,13 @@ const (
 
 var (
     RootDirName     = "/"
+    RootTestDir     = "/home/engos/Tarolas"
     FlagFalse       = false
     FlagTrue        = true
     EmptyValue      = ""
     SpaceValue      = "     "
     WhiteSpaceValue = "   \n   \t    "
+    NoRootSlashName = "noRootSlashName"
     Http400         = 400
 )
 

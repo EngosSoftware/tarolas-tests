@@ -38,6 +38,7 @@ func TdDirectoryRead(ctx *c.Context, dtx *oxyde.DocContext) {
     dtx.NewEndpoint(ctx.Version, c.DirectoriesTag, summary, description)
     TcDirectoryReadRoot(ctx, dtx)
     TcDirectoryReadEmptyRoot(ctx, dtx)
+    TcDirectoryReadNoPermissions(ctx, dtx)
     dtx.SaveEndpoint()
 }
 
@@ -80,6 +81,29 @@ func TcDirectoryReadEmptyRoot(ctx *c.Context, dtx *oxyde.DocContext) {
     f(DirectoryReadParams{Name: &c.EmptyValue},"required parameter is empty",10767)
     f(DirectoryReadParams{Name: &c.SpaceValue},"required parameter is empty",10767)
     f(DirectoryReadParams{Name: &c.WhiteSpaceValue},"required parameter is empty",10767)
+    c.DisplayOK(ctx)
+}
+
+func TcDirectoryReadNoPermissions(ctx *c.Context, dtx *oxyde.DocContext) {
+    const summary = `
+Reading the content of directory.
+`
+    const description = `
+aaa
+`
+    c.Display(ctx)
+    RemoveRootContents(ctx, dtx)
+    directoryNameA := c.RootDirName + c.DirectoryNames[c.DirectoryA]
+    directoryNameB := c.RootDirName + c.DirectoryNames[c.DirectoryB]
+    DirectoryCreate(ctx, dtx, directoryNameA, false)
+    DirectoryCreate(ctx, dtx, directoryNameB, false)
+    c.ChangeMode(directoryNameB,222)
+    params := DirectoryReadParams{Name: &directoryNameB}
+    var result DirectoryReadResult
+    dtx.CollectUsage(summary, description)
+    oxyde.HttpGET(ctx, dtx, DirectoryReadUrl, nil, &params, &result, 400)
+    c.AssertError(result.Errors, 400, "reading directory content failed", "/letters", 10147)
+    c.ChangeMode(directoryNameB,755)
     c.DisplayOK(ctx)
 }
 
