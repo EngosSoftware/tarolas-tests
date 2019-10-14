@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Dariusz Depta Engos Software
  *
- * License details in LICENSE.
+ * Check license details in LICENSE file.
  */
 
 package cases
@@ -33,7 +33,7 @@ func TsDirectoryList(ctx *c.Context, dtx *oxyde.DocContext) {
 }
 
 func TdDirectoryList(ctx *c.Context, dtx *oxyde.DocContext) {
-    const summary = `Lists the directory tree.`
+    const summary = `Lists all directories in the directory tree.`
     const description = `(to be updated)`
     c.Display(ctx)
     dtx.NewEndpoint(ctx.Version, c.DirectoriesTag, summary, description)
@@ -56,7 +56,8 @@ func TcDirectoryListRootEmpty(ctx *c.Context, dtx *oxyde.DocContext) {
     dtx.CollectUsage(summary, description)
     oxyde.HttpGET(ctx, dtx, DirectoryListUrl, nil, &params, &result, 200)
     oxyde.AssertNotNil(result.Data)
-    oxyde.AssertEqualInt(0, len(result.Data))
+    oxyde.AssertEqualInt(1, len(result.Data))
+    oxyde.AssertEqualString("/", result.Data[0])
     c.DisplayOK(ctx)
 }
 
@@ -76,8 +77,9 @@ aaa
     dtx.CollectAll(summary, description)
     oxyde.HttpGET(ctx, dtx, DirectoryListUrl, nil, &params, &result, 200)
     oxyde.AssertNotNil(result.Data)
-    oxyde.AssertEqualInt(1, len(result.Data))
-    oxyde.AssertEqualString(directoryName, result.Data[0])
+    oxyde.AssertEqualInt(2, len(result.Data))
+    oxyde.AssertEqualString("/", result.Data[0])
+    oxyde.AssertEqualString(directoryName, result.Data[1])
     c.DisplayOK(ctx)
 }
 
@@ -113,12 +115,13 @@ func TcDirectoryListMultiple(ctx *c.Context, dtx *oxyde.DocContext) {
     dtx.CollectUsage(summary, description)
     oxyde.HttpGET(ctx, dtx, DirectoryListUrl, nil, &params, &result, 200)
     oxyde.AssertNotNil(result.Data)
-    oxyde.AssertEqualInt(3, len(result.Data))
+    oxyde.AssertEqualInt(4, len(result.Data))
     names := []string{directoryNameA, directoryNameB, directoryNameC}
     sort.Strings(names)
-    oxyde.AssertEqualString(names[0], result.Data[0])
-    oxyde.AssertEqualString(names[1], result.Data[1])
-    oxyde.AssertEqualString(names[2], result.Data[2])
+    oxyde.AssertEqualString("/", result.Data[0])
+    oxyde.AssertEqualString(names[0], result.Data[1])
+    oxyde.AssertEqualString(names[1], result.Data[2])
+    oxyde.AssertEqualString(names[2], result.Data[3])
     c.DisplayOK(ctx)
 }
 
@@ -136,10 +139,11 @@ func TcDirectoryListMultipleDeep(ctx *c.Context, dtx *oxyde.DocContext) {
     dtx.CollectUsage(summary, description)
     oxyde.HttpGET(ctx, dtx, DirectoryListUrl, nil, &params, &result, 200)
     oxyde.AssertNotNil(result.Data)
-    oxyde.AssertEqualInt(3, len(result.Data))
-    oxyde.AssertEqualString(directoryNameA, result.Data[0])
-    oxyde.AssertEqualString(directoryNameB, result.Data[1])
-    oxyde.AssertEqualString(directoryNameC, result.Data[2])
+    oxyde.AssertEqualInt(4, len(result.Data))
+    oxyde.AssertEqualString("/", result.Data[0])
+    oxyde.AssertEqualString(directoryNameA, result.Data[1])
+    oxyde.AssertEqualString(directoryNameB, result.Data[2])
+    oxyde.AssertEqualString(directoryNameC, result.Data[3])
     c.DisplayOK(ctx)
 }
 

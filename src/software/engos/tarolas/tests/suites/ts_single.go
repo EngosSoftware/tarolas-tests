@@ -17,7 +17,8 @@ import (
 func Single(ctx *c.Context, dtx *o.DocContext) {
     c.Display(ctx)
     ctx.Verbose = true
-    tc.TsDirectoryRead(ctx, dtx)
+    tc.TsDirectoryDelete(ctx, dtx)
+    //tc.TcDirectoryDeleteSubdirectory(ctx, dtx)
 
     // start documentation preview server
     o.StartPreview(dtx)

@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Dariusz Depta Engos Software
  *
- * License details in LICENSE.
+ * Check license details in LICENSE file.
  */
 
 package cases
@@ -19,12 +19,16 @@ const (
 
 type DirectoryDeleteParams struct {
     Name *string `json:"name"  api:"Name of the directory to be deleted. Directory name may contain parent directories."`
-    All  *bool   `json:"all"   api:"?Optional flag indicating if whole directory content should be deleted, including subdirectories and files."`
+    All  *bool   `json:"all"   api:"?Optional flag indicating if the whole directory content should be deleted, including all subdirectories and files."`
+}
+
+type DeleteDirectoryDto struct {
+    Name *string `json:"name"  api:"Name of the deleted directory without parent path."`
 }
 
 type DirectoryDeleteResult struct {
-    Data   c.DirectoryDto `json:"data"`
-    Errors []c.ErrorDto   `json:"errors"`
+    Data   DeleteDirectoryDto `json:"data"`
+    Errors []c.ErrorDto         `json:"errors"`
 }
 
 func TsDirectoryDelete(ctx *c.Context, dtx *o.DocContext) {
@@ -78,7 +82,7 @@ func TcDirectoryDeleteRoot(ctx *c.Context, dtx *o.DocContext) {
     o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
     dir = DirectoryRead(ctx, dtx, c.RootDirName)
     c.AssertOneSubdirectory(dir, c.RootDirName, c.DirectoryNames[c.DirectoryA])
-    // with flag 'all' == true deleting non empty root directory should delete the content
+    // with flag 'all' == true deleting non empty root directory should delete the whole directory content
     params = DirectoryDeleteParams{Name: &c.RootDirName, All: &c.FlagTrue}
     o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
     dir = DirectoryRead(ctx, dtx, c.RootDirName)
@@ -93,6 +97,7 @@ func TcDirectoryDeleteSubdirectory(ctx *c.Context, dtx *o.DocContext) {
     DirectoryCreate(ctx, dtx, name, c.FlagTrue)
     var result DirectoryDeleteResult
     params := DirectoryDeleteParams{Name: &name, All: &c.FlagFalse}
+    dtx.CollectUsage("Deletes subdirectory", "")
     o.HttpDELETE(ctx, dtx, DirectoryDeleteUrl, nil, &params, nil, &result, 200)
     dir := DirectoryRead(ctx, dtx, c.RootDirName+c.DirectoryNames[c.DirectoryA])
     c.AssertEmptyDirectory(dir, c.DirectoryNames[c.DirectoryA])

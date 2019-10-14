@@ -3,7 +3,7 @@
  *
  * Copyright (c) 2019 Dariusz Depta Engos Software
  *
- * License details in LICENSE.
+ * Check license details in LICENSE file.
  */
 
 package common
