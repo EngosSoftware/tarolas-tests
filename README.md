@@ -8,4 +8,4 @@ Below is the content of example SVG file taken from page [SVG](https://pl.wikipe
 
 ![Piano](./piano.svg)
 
-End of example.
+End of example. This proofs, that using SVG files in README on GitHub works fine.
